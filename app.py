@@ -5,6 +5,7 @@ import numpy as np
 import pickle
 from PIL import Image
 from streamlit_extras.dataframe_explorer import dataframe_explorer
+import plotly.express as px
 
 st.set_page_config(page_title="Book Recommendation", layout="wide")
 
@@ -50,8 +51,8 @@ def recommend(book_name):
 st.write("##")
 selected_tab = option_menu(
     menu_title = None,
-    options = ['Top 50 Books', 'Book Recommendations','Tinker with Dataset', "Get in Touch with Me"],
-    icons = ['graph-up-arrow','hand-thumbs-up','funnel','envelope-open'],
+    options = ['Top 50 Books', 'Book Recommendations','Tinker with Dataset',"Data Analysis" ,"Get in Touch with Me"],
+    icons = ['graph-up-arrow','hand-thumbs-up','funnel','clipboard-data','envelope-open'],
     menu_icon = 'cast',
     default_index = 0,
     orientation = 'horizontal',
@@ -205,3 +206,68 @@ elif selected_tab == 'Get in Touch with Me':
         st.markdown(contact_form,unsafe_allow_html=True)
         local_css("style/style.css")
     
+
+elif selected_tab == "Data Analysis":
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        options = st.multiselect(
+            "Select the Publishers to find the number of books published with years",
+            pickle.load(open("publisher_multiselect.pkl",'rb')),
+            default=['Harlequin']
+        )
+        # pub_button = st.button(
+        #     "Click to check"
+        # )
+
+        # if pub_button:
+        ans = pd.DataFrame(columns=['Year-Of-Publication','Book-Title','Publisher'])
+
+        books['Year-Of-Publication'] = books['Year-Of-Publication'][books['Year-Of-Publication'] != 'DK Publishing Inc']
+        books['Year-Of-Publication'] = books['Year-Of-Publication'][books['Year-Of-Publication'] != '0']
+        books['Year-Of-Publication'] = books['Year-Of-Publication'][books['Year-Of-Publication'] != 0]
+
+        for publisher in options:
+            h_p_books = books[books['Publisher'] == publisher].groupby("Year-Of-Publication").count()[['Book-Title']].sort_values(['Book-Title'],ascending = False).reset_index().head(15)
+            h_p_books['Year-Of-Publication'] = h_p_books['Year-Of-Publication'].astype(int)
+            h_p_books = h_p_books.sort_values(['Year-Of-Publication'])
+            h_p_books['Publisher'] = publisher
+            ans = pd.concat([ans, h_p_books])
+
+        fig = px.line(ans,x = "Year-Of-Publication", y = "Book-Title", color = "Publisher",title="Number of books vs Year of Publications")
+        st.plotly_chart(fig,use_container_width=True)
+
+
+    with col2:
+        dataset = books.dropna()
+        # dataset['Book-Author'] = dataset['Book-Author'].apply(lambda x: x.lower())
+
+        options_a = st.multiselect(
+            "Select the Authors to find the number of books published with years",
+            pickle.load(open("author_multiselect.pkl",'rb')),
+            default = ['William Shakespeare']
+        )
+
+        # aut_button = st.button(
+        #     "Click here to check"
+        # )
+
+        # if aut_button:
+        ans = pd.DataFrame(columns=['Year-Of-Publication','Book-Title','Book-Author'])
+
+        
+        dataset['Year-Of-Publication'] = dataset['Year-Of-Publication'][dataset['Year-Of-Publication'] != 'DK Publishing Inc']
+        dataset['Year-Of-Publication'] = dataset['Year-Of-Publication'][dataset['Year-Of-Publication'] != '0']
+        dataset['Year-Of-Publication'] = dataset['Year-Of-Publication'][dataset['Year-Of-Publication'] != 0]
+
+        for author in options_a:
+            df_a = dataset[dataset['Book-Author'] == author].groupby('Year-Of-Publication').count()[['Book-Title']].sort_values(['Book-Title'],ascending = False).reset_index().head(15)
+            df_a['Year-Of-Publication'] = df_a['Year-Of-Publication'].astype(int)
+            df_a = df_a.sort_values(['Year-Of-Publication'])
+            df_a['Book-Author'] = author
+            ans = pd.concat([ans,df_a])
+
+        fig = px.line(ans,x = "Year-Of-Publication", y = "Book-Title", color = "Book-Author",title="Number of books vs Year of Publications")
+        st.plotly_chart(fig, use_container_width=True)

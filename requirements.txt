@@ -4,3 +4,4 @@ pandas
 numpy
 pillow
 streamlit_extras
+plotly
