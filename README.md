@@ -2,7 +2,7 @@
 
 <p align="center"><img src="https://socialify.git.ci/vivek-2567/Book-Recommendation-System/image?font=KoHo&amp;name=1&amp;owner=1&amp;pattern=Formal%20Invitation&amp;theme=Dark" alt="project-image"></p>
 
-<p id="description">In this project I have created a Collaborative Filtering Based Recommendation System. In this project I have chosen more than 700 Books to make the recommender system. The Project has been deployed at Streamlit Cloud. In this project during recommendation the book posters are also displayed during book recommendations to facilitate better recommendations.</p>
+<p id="description">In this project I have created a Collaborative Filtering Based Recommendation System. In this project I have chosen more than 700 Books to make the recommender system. The Project has been deployed at Streamlit Cloud. In this project during recommendation the book posters are also displayed during book recommendations to facilitate better recommendations.The project also has a interactive data analysis section to find out some insights and data.</p>
 
 <h2>🚀 Demo</h2>
 
@@ -21,6 +21,7 @@ Technologies used in the project:
 *   Pillow
 *   Streamlit extras
 *   Streamlit option menu
+*   plotly
 
 
 ## Run Locally
